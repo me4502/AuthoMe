@@ -1,0 +1,20 @@
+[
+    {
+        "modid": "AuthoMe",
+        "name": "AuthoMe",
+        "description": "Automatic AuthMe (AuthoMe, get it?)",
+        "version": "${version}",
+        "mcversion": "${mcversion}",
+        "url": "",
+        "updateUrl": "",
+        "authorList": [
+            "Me4502"
+        ],
+        "credits": "",
+        "logoFile": "",
+        "screenshots": [],
+        "dependencies": [
+            ""
+        ]
+    }
+]
