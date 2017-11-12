@@ -1,14 +1,15 @@
 package com.me4502.authome;
 
-import net.minecraft.block.Block;
-import net.minecraft.item.Item;
+import net.minecraft.client.Minecraft;
+import net.minecraftforge.client.event.ClientChatReceivedEvent;
+import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLInitializationEvent;
 import net.minecraftforge.fml.common.event.FMLPostInitializationEvent;
+import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.registry.GameRegistry;
-import net.minecraftforge.event.RegistryEvent;
+import net.minecraftforge.fml.relauncher.Side;
+import net.minecraftforge.fml.relauncher.SideOnly;
 
 @Mod(
         modid = AuthoMe.MOD_ID,
@@ -17,9 +18,11 @@ import net.minecraftforge.event.RegistryEvent;
 )
 public class AuthoMe {
 
-    public static final String MOD_ID = "AuthoMe";
+    public static final String MOD_ID = "authome";
     public static final String MOD_NAME = "AuthoMe";
     public static final String VERSION = "1.0-SNAPSHOT";
+
+    private String password;
 
     /** This is the instance of your mod as created by Forge. It will never be null. */
     @Mod.Instance(MOD_ID)
@@ -46,63 +49,23 @@ public class AuthoMe {
      * This is the final initialization event. Register actions from other mods here
      */
     @Mod.EventHandler
+    @SideOnly(Side.CLIENT)
     public void postinit(FMLPostInitializationEvent event) {
-
-    }
-
-    /**
-     * Forge will automatically look up and bind blocks to the fields in this class
-     * based on their registry name.
-     */
-    @GameRegistry.ObjectHolder(MOD_ID)
-    public static class Blocks {
-      /*
-          public static final MySpecialBlock mySpecialBlock = null; // placeholder for special block below
-      */
-    }
-
-    /**
-     * Forge will automatically look up and bind items to the fields in this class
-     * based on their registry name.
-     */
-    @GameRegistry.ObjectHolder(MOD_ID)
-    public static class Items {
-      /*
-          public static final ItemBlock mySpecialBlock = null; // itemblock for the block above
-          public static final MySpecialItem mySpecialItem = null; // placeholder for special item below
-      */
-    }
-
-    /**
-     * This is a special class that listens to registry events, to allow creation of mod blocks and items at the proper time.
-     */
-    @Mod.EventBusSubscriber
-    public static class ObjectRegistryHandler {
-
-        /** Listen for the register event for creating custom items */
-        @SubscribeEvent
-        public static void addItems(RegistryEvent.Register<Item> event) {
-           /*
-             event.getRegistry().register(new ItemBlock(Blocks.myBlock).setRegistryName(MOD_ID, "myBlock"));
-             event.getRegistry().register(new MySpecialItem().setRegistryName(MOD_ID, "mySpecialItem"));
-            */
-        }
-
-        /** Listen for the register event for creating custom blocks */
-        @SubscribeEvent
-        public static void addBlocks(RegistryEvent.Register<Block> event) {
-           /*
-             event.getRegistry().register(new MySpecialBlock().setRegistryName(MOD_ID, "mySpecialBlock"));
-            */
+        this.password = System.getProperty("authme_password", null);
+        if (this.password != null) {
+            MinecraftForge.EVENT_BUS.register(this);
         }
     }
-    /* EXAMPLE ITEM AND BLOCK - you probably want these in separate files
-    public static class MySpecialItem extends Item {
 
+    @SideOnly(Side.CLIENT)
+    @SubscribeEvent
+    public void onChat(ClientChatReceivedEvent event) {
+        if (password != null) {
+            if (event.getMessage().getUnformattedText().contains("/register")) {
+                Minecraft.getMinecraft().player.sendChatMessage("/register " + password + " " + password);
+            } else if (event.getMessage().getUnformattedText().contains("/login")) {
+                Minecraft.getMinecraft().player.sendChatMessage("/login " + password);
+            }
+        }
     }
-
-    public static class MySpecialBlock extends Block {
-
-    }
-    */
 }
